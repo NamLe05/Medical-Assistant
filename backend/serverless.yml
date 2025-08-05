@@ -1,0 +1,31 @@
+service: ai-medical-assistant-backend
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-west-2
+  stage: dev
+  environment:
+    TABLE_NAME: Reminders-dev
+
+functions:
+  saveReminder:
+    handler: functions/saveReminder.handler
+    events:
+      - http:
+          path: save-reminder
+          method: post
+
+resources:
+  Resources:
+    RemindersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Reminders-dev
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST

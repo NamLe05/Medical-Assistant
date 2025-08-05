@@ -1,0 +1,20 @@
+{
+  "name": "ai-medical-assistant-backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "serverless deploy",
+    "offline": "serverless offline",
+    "lint": "eslint .",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1415.0"
+  },
+  "devDependencies": {
+    "serverless": "^3.38.0",
+    "serverless-offline": "^12.0.4",
+    "typescript": "^5.3.3",
+    "@types/aws-lambda": "^8.10.92"
+  }
+}
