@@ -1,16 +1,47 @@
+
+// App.tsx
 import React from 'react';
-import { View, Text, Button } from 'react-native';
-import * as Speech from 'expo-speech';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import WelcomeScreen from './screens/WelcomeScreen';
+import LoginScreen from './screens/LoginScreen';
+import SignUpScreen from './screens/SignUpScreen';
+
+// Define screen types
+export type RootStackParamList = {
+  Welcome: undefined;
+  Login: undefined;
+  SignUp: undefined;
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
-  const speak = () => {
-    Speech.speak("Hello! Welcome to your AI Medical Assistant.");
-  };
-
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ fontSize: 18, marginBottom: 12 }}>AI Medical Assistant</Text>
-      <Button title="Speak" onPress={speak} />
-    </View>
+    <NavigationContainer>
+       <Stack.Navigator 
+        initialRouteName="Welcome"
+        screenOptions={{
+          headerStyle: { backgroundColor: '#2E5BBA' },
+          headerTintColor: '#fff',
+          headerTitleStyle: { fontWeight: 'bold' },
+        }}
+        {...({ id: undefined } as any)} // Type assertion
+      >
+        <Stack.Screen 
+          name="Welcome" 
+          component={WelcomeScreen}
+          options={{ headerShown: false }} // Hide header on welcome screen
+        />
+        <Stack.Screen name="Login" 
+          component={LoginScreen} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="SignUp" 
+          component={SignUpScreen} 
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
