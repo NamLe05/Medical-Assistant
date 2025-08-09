@@ -111,7 +111,7 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 20,
+    fontSize: 18,
     color: '#333',
     textAlign: 'left',
     marginLeft: 10,

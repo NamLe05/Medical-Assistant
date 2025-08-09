@@ -112,7 +112,7 @@ export default function CreateAppointmentScreen({ navigation }: CreateAppointmen
     >
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={32} color="#333" marginBottom={20} />
+          <Ionicons name="chevron-back" size={32} color="#333" marginBottom={10} />
         </TouchableOpacity>
         <Text style={[globalStyles.headerText, styles.title]}>Create A New Appointment!</Text>
       </View>
@@ -132,6 +132,13 @@ export default function CreateAppointmentScreen({ navigation }: CreateAppointmen
 
         <CustomTextInput
           label="Location"
+          hint="Where is the appointment"
+          value={location}
+          onChangeText={setLocation}
+        />
+
+        <CustomTextInput
+          label="Address"
           hint="Where is the appointment"
           value={location}
           onChangeText={setLocation}
@@ -195,14 +202,15 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'left',
     marginLeft: 10,
+    marginBottom: 10,
   },
   inputContainer: {
     paddingHorizontal: 25,
     marginBottom: 20,
   },
   inputTitle: {
-    fontSize: 20,
-    marginBottom: 8,
+    fontSize: 18,
+    marginBottom: 0,
   },
   input: {
     borderBottomWidth: 2,
@@ -214,6 +222,7 @@ const styles = StyleSheet.create({
     width: '90%',
     height: 40,
     textAlignVertical: 'center',
+    marginBottom: 5,
   },
   notesInput: {
     height: 100,
@@ -229,7 +238,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 20,
     marginBottom: 20,
   },
   saveButtonText: {
