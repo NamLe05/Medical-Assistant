@@ -60,7 +60,7 @@ export default function SignUp({ navigation }: SignUpScreenProps) {
         />
         <TouchableOpacity 
             style={styles.loginButton} 
-            onPress={() => navigation.navigate('Welcome')}
+            onPress={() => navigation.navigate('MainTabs')}
         >
             <Text style={styles.loginTitle}>Sign Up</Text>
         </TouchableOpacity>

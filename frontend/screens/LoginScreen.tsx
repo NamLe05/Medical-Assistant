@@ -27,8 +27,8 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             placeholderTextColor="#9ca3af"
             value={email}
             onChangeText={setEmail}
-            multiline={false}           // Prevent multiline
-            numberOfLines={1}           // Force single line
+            multiline={false}           
+            numberOfLines={1}          
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
@@ -39,15 +39,15 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             placeholderTextColor="#9ca3af"
             value={password}
             onChangeText={setPassword}
-            multiline={false}           // Prevent multiline
-            numberOfLines={1}           // Force single line
-            secureTextEntry={true}      // Hide password text
+            multiline={false}           
+            numberOfLines={1}           
+            secureTextEntry={true}     
             autoCapitalize="none"
             autoCorrect={false}
         />
         <TouchableOpacity 
             style={styles.loginButton} 
-            onPress={() => navigation.navigate('Login')}
+            onPress={() => navigation.navigate('MainTabs')}
         >
             <Text style={styles.loginTitle}>Login</Text>
         </TouchableOpacity>
@@ -67,10 +67,10 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: 60,        // Adjust based on your status bar height
-    left: 20,       // Distance from left edge
-    zIndex: 1,      // Ensure it's above other elements
-    padding: 10,    // Larger touch area
+    top: 60,        
+    left: 20,       
+    zIndex: 1,      
+    padding: 10,    
   },
   title: {
     fontSize: 24,
@@ -88,10 +88,10 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     fontSize: 16,
     color: '#1f2937',
-    width: '80%',              // Full width
-    height: 56,                 // Fixed height instead of min/max
-    marginBottom: 30,           // Space between inputs
-    textAlignVertical: 'center', // Center text vertically
+    width: '80%',             
+    height: 56,                 
+    marginBottom: 30,           
+    textAlignVertical: 'center', 
   },
   loginButton: {
     backgroundColor: '#2E5BBA',
@@ -105,7 +105,6 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(74, 144, 226, 0.3)',
     borderBottomWidth: 4,
     borderBottomColor: '#003ab8ff',
-    
   },
   loginTitle: {
     fontSize: 20,
