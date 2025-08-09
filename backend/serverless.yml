@@ -4,28 +4,210 @@ provider:
   name: aws
   runtime: nodejs18.x
   region: us-west-2
-  stage: dev
+  stage: ${opt:stage, 'dev'}
   environment:
-    TABLE_NAME: Reminders-dev
+    TABLE_NAME: MedicalRecords-${self:provider.stage}
+    USERS_TABLE_NAME: Users-${self:provider.stage}
+    CONVERSATIONS_TABLE_NAME: Conversations-${self:provider.stage}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: 
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/MedicalRecords-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Users-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Conversations-${self:provider.stage}"
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "*"
 
 functions:
+  # User Management
+  createUser:
+    handler: functions/user/createUser.handler
+    events:
+      - http:
+          path: users
+          method: post
+          cors: true
+
+  getUser:
+    handler: functions/user/getUser.handler
+    events:
+      - http:
+          path: users/{userId}
+          method: get
+          cors: true
+
+  updateUser:
+    handler: functions/user/updateUser.handler
+    events:
+      - http:
+          path: users/{userId}
+          method: put
+          cors: true
+
+  # Medical Records
+  createMedicalRecord:
+    handler: functions/medical/createMedicalRecord.handler
+    events:
+      - http:
+          path: medical-records
+          method: post
+          cors: true
+
+  getMedicalRecords:
+    handler: functions/medical/getMedicalRecords.handler
+    events:
+      - http:
+          path: medical-records/{userId}
+          method: get
+          cors: true
+
+  updateMedicalRecord:
+    handler: functions/medical/updateMedicalRecord.handler
+    events:
+      - http:
+          path: medical-records/{recordId}
+          method: put
+          cors: true
+
+  deleteMedicalRecord:
+    handler: functions/medical/deleteMedicalRecord.handler
+    events:
+      - http:
+          path: medical-records/{recordId}
+          method: delete
+          cors: true
+
+  # AI Chat
+  chatWithAI:
+    handler: functions/ai/chatWithAI.handler
+    events:
+      - http:
+          path: chat
+          method: post
+          cors: true
+
+  # Reminders (existing)
   saveReminder:
     handler: functions/saveReminder.handler
     events:
       - http:
           path: save-reminder
           method: post
+          cors: true
+
+  getReminders:
+    handler: functions/getReminders.handler
+    events:
+      - http:
+          path: reminders/{userId}
+          method: get
+          cors: true
 
 resources:
   Resources:
-    RemindersTable:
+    # Users Table
+    UsersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: Reminders-dev
+        TableName: Users-${self:provider.stage}
         AttributeDefinitions:
           - AttributeName: userId
+            AttributeType: S
+          - AttributeName: email
             AttributeType: S
         KeySchema:
           - AttributeName: userId
             KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: EmailIndex
+            KeySchema:
+              - AttributeName: email
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
+
+    # Medical Records Table
+    MedicalRecordsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: MedicalRecords-${self:provider.stage}
+        AttributeDefinitions:
+          - AttributeName: recordId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: recordId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserRecordsIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+
+    # Conversations Table
+    ConversationsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Conversations-${self:provider.stage}
+        AttributeDefinitions:
+          - AttributeName: conversationId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: S
+        KeySchema:
+          - AttributeName: conversationId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserConversationsIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: timestamp
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+
+    # Reminders Table (existing)
+    RemindersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Reminders-${self:provider.stage}
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: reminderId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: reminderId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+plugins:
+  - serverless-offline

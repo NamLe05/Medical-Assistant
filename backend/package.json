@@ -4,17 +4,32 @@
   "private": true,
   "scripts": {
     "deploy": "serverless deploy",
+    "deploy:prod": "serverless deploy --stage prod",
     "offline": "serverless offline",
     "lint": "eslint .",
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "echo \"No tests yet\" && exit 0",
+    "build": "tsc",
+    "dev": "npm run build && serverless offline"
   },
   "dependencies": {
-    "aws-sdk": "^2.1415.0"
+    "aws-sdk": "^2.1415.0",
+    "uuid": "^9.0.0",
+    "joi": "^17.9.2",
+    "openai": "^4.20.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "serverless": "^3.38.0",
     "serverless-offline": "^12.0.4",
     "typescript": "^5.3.3",
-    "@types/aws-lambda": "^8.10.92"
+    "@types/aws-lambda": "^8.10.92",
+    "@types/uuid": "^9.0.1",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/node": "^18.15.0",
+    "eslint": "^8.40.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.0",
+    "@typescript-eslint/parser": "^5.59.0"
   }
 }
