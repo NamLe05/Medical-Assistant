@@ -5,7 +5,11 @@ import { conversationsService, usersService } from '../../utils/dynamodb';
 import { ChatRequest, ChatResponse, Conversation, Message, User, ApiResponse } from '../../types';
 
 // Initialize OpenAI client
+<<<<<<< HEAD
 const openai = new (OpenAI as any)({
+=======
+const openai = new OpenAI({
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
   apiKey: process.env.OPENAI_API_KEY,
 });
 

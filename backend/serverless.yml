@@ -5,7 +5,10 @@ provider:
   runtime: nodejs18.x
   region: us-west-2
   stage: ${opt:stage, 'dev'}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
   environment:
     TABLE_NAME: MedicalRecords-${self:provider.stage}
     USERS_TABLE_NAME: Users-${self:provider.stage}
@@ -23,6 +26,7 @@ provider:
             - dynamodb:DeleteItem
           Resource: 
             - "arn:aws:dynamodb:${self:provider.region}:*:table/MedicalRecords-${self:provider.stage}"
+<<<<<<< HEAD
             - "arn:aws:dynamodb:${self:provider.region}:*:table/MedicalRecords-${self:provider.stage}/index/*"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/Users-${self:provider.stage}"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/Users-${self:provider.stage}/index/*"
@@ -30,6 +34,10 @@ provider:
             - "arn:aws:dynamodb:${self:provider.region}:*:table/Conversations-${self:provider.stage}/index/*"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/Reminders-${self:provider.stage}"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/Reminders-${self:provider.stage}/index/*"
+=======
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Users-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Conversations-${self:provider.stage}"
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
         - Effect: Allow
           Action:
             - logs:CreateLogGroup
@@ -40,7 +48,11 @@ provider:
 functions:
   # User Management
   createUser:
+<<<<<<< HEAD
     handler: dist/functions/user/createUser.handler
+=======
+    handler: functions/user/createUser.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
     events:
       - http:
           path: users
@@ -48,24 +60,42 @@ functions:
           cors: true
 
   getUser:
+<<<<<<< HEAD
     handler: dist/functions/user/getUser.handler
     events:
       - http:
           path: users/profile/{userId}
+=======
+    handler: functions/user/getUser.handler
+    events:
+      - http:
+          path: users/{userId}
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
           method: get
           cors: true
 
   updateUser:
+<<<<<<< HEAD
     handler: dist/functions/user/updateUser.handler
     events:
       - http:
           path: users/profile/{userId}
+=======
+    handler: functions/user/updateUser.handler
+    events:
+      - http:
+          path: users/{userId}
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
           method: put
           cors: true
 
   # Medical Records
   createMedicalRecord:
+<<<<<<< HEAD
     handler: dist/functions/medical/createMedicalRecord.handler
+=======
+    handler: functions/medical/createMedicalRecord.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
     events:
       - http:
           path: medical-records
@@ -73,15 +103,26 @@ functions:
           cors: true
 
   getMedicalRecords:
+<<<<<<< HEAD
     handler: dist/functions/medical/getMedicalRecords.handler
     events:
       - http:
           path: medical-records/user/{userId}
+=======
+    handler: functions/medical/getMedicalRecords.handler
+    events:
+      - http:
+          path: medical-records/{userId}
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
           method: get
           cors: true
 
   updateMedicalRecord:
+<<<<<<< HEAD
     handler: dist/functions/medical/updateMedicalRecord.handler
+=======
+    handler: functions/medical/updateMedicalRecord.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
     events:
       - http:
           path: medical-records/{recordId}
@@ -89,7 +130,11 @@ functions:
           cors: true
 
   deleteMedicalRecord:
+<<<<<<< HEAD
     handler: dist/functions/medical/deleteMedicalRecord.handler
+=======
+    handler: functions/medical/deleteMedicalRecord.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
     events:
       - http:
           path: medical-records/{recordId}
@@ -98,7 +143,11 @@ functions:
 
   # AI Chat
   chatWithAI:
+<<<<<<< HEAD
     handler: dist/functions/ai/chatWithAI.handler
+=======
+    handler: functions/ai/chatWithAI.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
     events:
       - http:
           path: chat
@@ -115,6 +164,7 @@ functions:
           cors: true
 
   getReminders:
+<<<<<<< HEAD
     handler: dist/functions/getReminders.handler
     events:
       - http:
@@ -127,6 +177,12 @@ functions:
     events:
       - http:
           path: test
+=======
+    handler: functions/getReminders.handler
+    events:
+      - http:
+          path: reminders/{userId}
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
           method: get
           cors: true
 
@@ -223,5 +279,10 @@ resources:
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
 
+<<<<<<< HEAD
 # plugins:
 #   - serverless-offline
+=======
+plugins:
+  - serverless-offline
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
