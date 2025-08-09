@@ -6,7 +6,11 @@ import { ChatRequest, ChatResponse, Conversation, Message, User, ApiResponse } f
 
 // Initialize OpenAI client
 <<<<<<< HEAD
+<<<<<<< HEAD
 const openai = new (OpenAI as any)({
+=======
+const openai = new OpenAI({
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
 =======
 const openai = new OpenAI({
 >>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
