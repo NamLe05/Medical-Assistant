@@ -4,28 +4,342 @@ provider:
   name: aws
   runtime: nodejs18.x
   region: us-west-2
-  stage: dev
+  stage: ${opt:stage, 'dev'}
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+=======
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
   environment:
-    TABLE_NAME: Reminders-dev
+    TABLE_NAME: MedicalRecords-${self:provider.stage}
+    USERS_TABLE_NAME: Users-${self:provider.stage}
+    CONVERSATIONS_TABLE_NAME: Conversations-${self:provider.stage}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: 
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/MedicalRecords-${self:provider.stage}"
+<<<<<<< HEAD
+<<<<<<< HEAD
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/MedicalRecords-${self:provider.stage}/index/*"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Users-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Users-${self:provider.stage}/index/*"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Conversations-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Conversations-${self:provider.stage}/index/*"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Reminders-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Reminders-${self:provider.stage}/index/*"
+=======
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Users-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Conversations-${self:provider.stage}"
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+=======
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Users-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Conversations-${self:provider.stage}"
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "*"
 
 functions:
+  # User Management
+  createUser:
+<<<<<<< HEAD
+<<<<<<< HEAD
+    handler: dist/functions/user/createUser.handler
+=======
+    handler: functions/user/createUser.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+=======
+    handler: functions/user/createUser.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+    events:
+      - http:
+          path: users
+          method: post
+          cors: true
+
+  getUser:
+<<<<<<< HEAD
+<<<<<<< HEAD
+    handler: dist/functions/user/getUser.handler
+    events:
+      - http:
+          path: users/profile/{userId}
+=======
+=======
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+    handler: functions/user/getUser.handler
+    events:
+      - http:
+          path: users/{userId}
+<<<<<<< HEAD
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+=======
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+          method: get
+          cors: true
+
+  updateUser:
+<<<<<<< HEAD
+<<<<<<< HEAD
+    handler: dist/functions/user/updateUser.handler
+    events:
+      - http:
+          path: users/profile/{userId}
+=======
+=======
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+    handler: functions/user/updateUser.handler
+    events:
+      - http:
+          path: users/{userId}
+<<<<<<< HEAD
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+=======
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+          method: put
+          cors: true
+
+  # Medical Records
+  createMedicalRecord:
+<<<<<<< HEAD
+<<<<<<< HEAD
+    handler: dist/functions/medical/createMedicalRecord.handler
+=======
+    handler: functions/medical/createMedicalRecord.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+=======
+    handler: functions/medical/createMedicalRecord.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+    events:
+      - http:
+          path: medical-records
+          method: post
+          cors: true
+
+  getMedicalRecords:
+<<<<<<< HEAD
+<<<<<<< HEAD
+    handler: dist/functions/medical/getMedicalRecords.handler
+    events:
+      - http:
+          path: medical-records/user/{userId}
+=======
+=======
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+    handler: functions/medical/getMedicalRecords.handler
+    events:
+      - http:
+          path: medical-records/{userId}
+<<<<<<< HEAD
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+=======
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+          method: get
+          cors: true
+
+  updateMedicalRecord:
+<<<<<<< HEAD
+<<<<<<< HEAD
+    handler: dist/functions/medical/updateMedicalRecord.handler
+=======
+    handler: functions/medical/updateMedicalRecord.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+=======
+    handler: functions/medical/updateMedicalRecord.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+    events:
+      - http:
+          path: medical-records/{recordId}
+          method: put
+          cors: true
+
+  deleteMedicalRecord:
+<<<<<<< HEAD
+<<<<<<< HEAD
+    handler: dist/functions/medical/deleteMedicalRecord.handler
+=======
+    handler: functions/medical/deleteMedicalRecord.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+=======
+    handler: functions/medical/deleteMedicalRecord.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+    events:
+      - http:
+          path: medical-records/{recordId}
+          method: delete
+          cors: true
+
+  # AI Chat
+  chatWithAI:
+<<<<<<< HEAD
+<<<<<<< HEAD
+    handler: dist/functions/ai/chatWithAI.handler
+=======
+    handler: functions/ai/chatWithAI.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+=======
+    handler: functions/ai/chatWithAI.handler
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+    events:
+      - http:
+          path: chat
+          method: post
+          cors: true
+
+  # Reminders (existing)
   saveReminder:
-    handler: functions/saveReminder.handler
+    handler: dist/functions/saveReminder.handler
     events:
       - http:
           path: save-reminder
           method: post
+          cors: true
+
+  getReminders:
+<<<<<<< HEAD
+<<<<<<< HEAD
+    handler: dist/functions/getReminders.handler
+    events:
+      - http:
+          path: reminders/user/{userId}
+          method: get
+          cors: true
+
+  test:
+    handler: dist/functions/test.handler
+    events:
+      - http:
+          path: test
+=======
+=======
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+    handler: functions/getReminders.handler
+    events:
+      - http:
+          path: reminders/{userId}
+<<<<<<< HEAD
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+=======
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+          method: get
+          cors: true
 
 resources:
   Resources:
-    RemindersTable:
+    # Users Table
+    UsersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: Reminders-dev
+        TableName: Users-${self:provider.stage}
         AttributeDefinitions:
           - AttributeName: userId
+            AttributeType: S
+          - AttributeName: email
             AttributeType: S
         KeySchema:
           - AttributeName: userId
             KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: EmailIndex
+            KeySchema:
+              - AttributeName: email
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
+
+    # Medical Records Table
+    MedicalRecordsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: MedicalRecords-${self:provider.stage}
+        AttributeDefinitions:
+          - AttributeName: recordId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: recordId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserRecordsIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+
+    # Conversations Table
+    ConversationsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Conversations-${self:provider.stage}
+        AttributeDefinitions:
+          - AttributeName: conversationId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: S
+        KeySchema:
+          - AttributeName: conversationId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserConversationsIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: timestamp
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+
+    # Reminders Table (existing)
+    RemindersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Reminders-${self:provider.stage}
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: reminderId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: reminderId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+<<<<<<< HEAD
+<<<<<<< HEAD
+# plugins:
+#   - serverless-offline
+=======
+plugins:
+  - serverless-offline
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3
+=======
+plugins:
+  - serverless-offline
+>>>>>>> 61710a91692faa137c16202dba6734151b16bfb3

@@ -1,0 +1,34 @@
+service: ai-medical-assistant-backend
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-west-2
+  stage: ${opt:stage, 'simple'}
+
+functions:
+  saveReminder:
+    handler: functions/saveReminder.handler
+    events:
+      - http:
+          path: save-reminder
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    RemindersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Reminders-${self:provider.stage}
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: reminderId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: reminderId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST 
