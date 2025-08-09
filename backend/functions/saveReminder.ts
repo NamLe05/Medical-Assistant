@@ -29,7 +29,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Internal server error", error: error.message }),
+      body: JSON.stringify({ message: "Internal server error", error: error instanceof Error ? error.message : 'Unknown error' }),
     };
   }
 };
