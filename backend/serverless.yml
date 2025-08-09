@@ -5,6 +5,7 @@ provider:
   runtime: nodejs18.x
   region: us-west-2
   stage: ${opt:stage, 'dev'}
+
   environment:
     TABLE_NAME: MedicalRecords-${self:provider.stage}
     USERS_TABLE_NAME: Users-${self:provider.stage}
@@ -22,8 +23,13 @@ provider:
             - dynamodb:DeleteItem
           Resource: 
             - "arn:aws:dynamodb:${self:provider.region}:*:table/MedicalRecords-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/MedicalRecords-${self:provider.stage}/index/*"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/Users-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Users-${self:provider.stage}/index/*"
             - "arn:aws:dynamodb:${self:provider.region}:*:table/Conversations-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Conversations-${self:provider.stage}/index/*"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Reminders-${self:provider.stage}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/Reminders-${self:provider.stage}/index/*"
         - Effect: Allow
           Action:
             - logs:CreateLogGroup
@@ -34,7 +40,7 @@ provider:
 functions:
   # User Management
   createUser:
-    handler: functions/user/createUser.handler
+    handler: dist/functions/user/createUser.handler
     events:
       - http:
           path: users
@@ -42,24 +48,24 @@ functions:
           cors: true
 
   getUser:
-    handler: functions/user/getUser.handler
+    handler: dist/functions/user/getUser.handler
     events:
       - http:
-          path: users/{userId}
+          path: users/profile/{userId}
           method: get
           cors: true
 
   updateUser:
-    handler: functions/user/updateUser.handler
+    handler: dist/functions/user/updateUser.handler
     events:
       - http:
-          path: users/{userId}
+          path: users/profile/{userId}
           method: put
           cors: true
 
   # Medical Records
   createMedicalRecord:
-    handler: functions/medical/createMedicalRecord.handler
+    handler: dist/functions/medical/createMedicalRecord.handler
     events:
       - http:
           path: medical-records
@@ -67,15 +73,15 @@ functions:
           cors: true
 
   getMedicalRecords:
-    handler: functions/medical/getMedicalRecords.handler
+    handler: dist/functions/medical/getMedicalRecords.handler
     events:
       - http:
-          path: medical-records/{userId}
+          path: medical-records/user/{userId}
           method: get
           cors: true
 
   updateMedicalRecord:
-    handler: functions/medical/updateMedicalRecord.handler
+    handler: dist/functions/medical/updateMedicalRecord.handler
     events:
       - http:
           path: medical-records/{recordId}
@@ -83,7 +89,7 @@ functions:
           cors: true
 
   deleteMedicalRecord:
-    handler: functions/medical/deleteMedicalRecord.handler
+    handler: dist/functions/medical/deleteMedicalRecord.handler
     events:
       - http:
           path: medical-records/{recordId}
@@ -92,7 +98,7 @@ functions:
 
   # AI Chat
   chatWithAI:
-    handler: functions/ai/chatWithAI.handler
+    handler: dist/functions/ai/chatWithAI.handler
     events:
       - http:
           path: chat
@@ -101,7 +107,7 @@ functions:
 
   # Reminders (existing)
   saveReminder:
-    handler: functions/saveReminder.handler
+    handler: dist/functions/saveReminder.handler
     events:
       - http:
           path: save-reminder
@@ -109,10 +115,18 @@ functions:
           cors: true
 
   getReminders:
-    handler: functions/getReminders.handler
+    handler: dist/functions/getReminders.handler
     events:
       - http:
-          path: reminders/{userId}
+          path: reminders/user/{userId}
+          method: get
+          cors: true
+
+  test:
+    handler: dist/functions/test.handler
+    events:
+      - http:
+          path: test
           method: get
           cors: true
 
@@ -209,5 +223,5 @@ resources:
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
 
-plugins:
-  - serverless-offline
+# plugins:
+#   - serverless-offline

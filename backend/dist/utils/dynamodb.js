@@ -92,8 +92,8 @@ class DynamoDBService {
     }
 }
 exports.DynamoDBService = DynamoDBService;
-exports.usersService = new DynamoDBService(process.env.USERS_TABLE_NAME || 'Users-dev');
-exports.medicalRecordsService = new DynamoDBService(process.env.TABLE_NAME || 'MedicalRecords-dev');
-exports.conversationsService = new DynamoDBService(process.env.CONVERSATIONS_TABLE_NAME || 'Conversations-dev');
-exports.remindersService = new DynamoDBService(process.env.TABLE_NAME || 'Reminders-dev');
+exports.usersService = new DynamoDBService(process.env.USERS_TABLE_NAME || 'Users-full');
+exports.medicalRecordsService = new DynamoDBService(process.env.TABLE_NAME || 'MedicalRecords-full');
+exports.conversationsService = new DynamoDBService(process.env.CONVERSATIONS_TABLE_NAME || 'Conversations-full');
+exports.remindersService = new DynamoDBService(process.env.TABLE_NAME || 'Reminders-full');
 //# sourceMappingURL=dynamodb.js.map

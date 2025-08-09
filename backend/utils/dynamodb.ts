@@ -126,7 +126,7 @@ export class DynamoDBService {
 }
 
 // Export service instances for each table
-export const usersService = new DynamoDBService(process.env.USERS_TABLE_NAME || 'Users-dev');
-export const medicalRecordsService = new DynamoDBService(process.env.TABLE_NAME || 'MedicalRecords-dev');
-export const conversationsService = new DynamoDBService(process.env.CONVERSATIONS_TABLE_NAME || 'Conversations-dev');
-export const remindersService = new DynamoDBService(process.env.TABLE_NAME || 'Reminders-dev'); 
+export const usersService = new DynamoDBService(process.env.USERS_TABLE_NAME || 'Users-full');
+export const medicalRecordsService = new DynamoDBService(process.env.TABLE_NAME || 'MedicalRecords-full');
+export const conversationsService = new DynamoDBService(process.env.CONVERSATIONS_TABLE_NAME || 'Conversations-full');
+export const remindersService = new DynamoDBService(process.env.TABLE_NAME || 'Reminders-full'); 
