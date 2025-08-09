@@ -2,7 +2,7 @@
 
 This is a boilerplate project for an AI medical assistant app with:
 
-- Frontend: React Native (Expo SDK 50)
+- Frontend: React Native (Expo SDK 53)
 - Backend: AWS Lambda + DynamoDB (Serverless Framework)
 
 ## Setup Instructions
