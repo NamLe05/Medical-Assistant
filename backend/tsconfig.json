@@ -26,7 +26,8 @@
   },
   "include": [
     "functions/**/*",
-    "types/**/*"
+    "types/**/*",
+    "utils/**/*"
   ],
   "exclude": [
     "node_modules",
