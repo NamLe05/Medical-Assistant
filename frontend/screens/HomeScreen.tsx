@@ -4,8 +4,8 @@ import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useFonts, Nunito_400Regular, Nunito_600SemiBold, Nunito_700Bold } from '@expo-google-fonts/nunito';
 import { BlurView } from 'expo-blur';
-import globalStyles from '../components/globalStyles';import ModalAppointmentCard from '../components/ModalAppointmentCard';
-import { Appointment, AppointmentList, useAppointments } from '../types/AppointmentType'
+import globalStyles from '../components/globalStyles'; import ModalAppointmentCard from '../components/ModalAppointmentCard';
+import { Appointment, useAppointments } from '../types/AppointmentProvider'
 import AppointmentCardStack from '../components/AppointmentCardStack';
 import { HomeStackParamList } from '../App'
 import { DateTime } from '../types/DateTime';
@@ -28,7 +28,7 @@ type HomeScreenProps = {
   navigation: StackNavigationProp<HomeStackParamList, 'Home'>;
 };
 
-export default function HomeScreen({ navigation}: HomeScreenProps) {
+export default function HomeScreen({ navigation }: HomeScreenProps) {
   const { appointments, addAppt, removeAppt, updateAppt } = useAppointments();
 
   const [isCardExpanded, setIsCardExpanded] = useState(false);
@@ -38,13 +38,11 @@ export default function HomeScreen({ navigation}: HomeScreenProps) {
 
   useEffect(() => {
     if (appointments.length === 0) {
-      addAppt(mockAppointment);
-      addAppt(mockAppointment);
-      addAppt(mockAppointment);
+
     }
   }, [appointments.length, addAppt]);
 
-  // Use the first appointment from props, or fallback to mock data
+  // Use the first appoinrtment from props, or fallback to mock data
   const displayAppointment = appointments.length > 0 ? appointments[0] : null;
   const totalAppointments = appointments.length;
   console.log(totalAppointments)
@@ -84,16 +82,20 @@ export default function HomeScreen({ navigation}: HomeScreenProps) {
     Nunito_700Bold
   });
 
+  if (!fontsLoaded) {
+    return null; // or a loading spinner
+  }
+
   // HEADER
   const HeaderSection = (
     <View style={styles.headerContainer}>
       <View style={globalStyles.rowSpacing}>
         <Text style={[globalStyles.headerText, styles.date]}>{date.getFormattedDate()}</Text>
-        <View style={globalStyles.column}>
+        <View style={[globalStyles.column, { marginLeft: -20 }]}>
           <Text style={[globalStyles.headerText, styles.weather]}>Sunny</Text>
           <Text style={[globalStyles.headerText, styles.weather]}>70°F</Text>
         </View>
-        <Ionicons name="sunny" marginLeft={10} size={24} color="#FFA500" />
+        <Ionicons name="sunny" marginLeft={5} size={24} color="#FFA500" />
       </View>
       <Text style={[globalStyles.headerText, styles.title]}>Good morning, Nam</Text>
       <View style={globalStyles.divider} />
@@ -106,11 +108,11 @@ export default function HomeScreen({ navigation}: HomeScreenProps) {
       <View style={globalStyles.rowSpacing}>
         <Text style={globalStyles.sectionTitleText}>Upcoming Appointments</Text>
         <TouchableOpacity onPress={() => handleAppointmentPress(displayAppointment)}></TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('CreateAppointment')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Appointments')}>
           <Ionicons name="menu" marginTop={10} size={24} color='#333' />
         </TouchableOpacity>
       </View>
-            
+
       <AppointmentCardStack
         appointment={displayAppointment}
         totalAppointments={totalAppointments}
@@ -163,9 +165,9 @@ export default function HomeScreen({ navigation}: HomeScreenProps) {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.medicationCard, globalStyles.columnCentered, { marginRight: 15, borderWidth: 2, borderColor: '#333',  alignItems: 'center' }]}>
+          <TouchableOpacity style={[styles.medicationCard, globalStyles.columnCentered, { marginRight: 15, borderWidth: 2, borderColor: '#333', alignItems: 'center' }]}>
             <Ionicons name="add" size={48} color="black" />
-            <Text style={[globalStyles.cardTitleText, { marginTop: 10, color: '#333'}]}>Add New</Text>
+            <Text style={[globalStyles.cardTitleText, { marginTop: 10, color: '#333' }]}>Add New</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -173,28 +175,28 @@ export default function HomeScreen({ navigation}: HomeScreenProps) {
   );
 
   return (
-      <View style={globalStyles.container}>
-        <ScrollView style={globalStyles.container}>
-          {HeaderSection}
+    <View style={globalStyles.container}>
+      <ScrollView style={globalStyles.container}>
+        {HeaderSection}
 
-          {AppointmentSection}
+        {AppointmentSection}
 
-          {MedicationSection}
+        {MedicationSection}
 
 
-          <View style={styles.sectionContainer}>
-            <View style={globalStyles.rowSpacing}>
-              <Text style={globalStyles.sectionTitleText}>Feed</Text>
-              <Ionicons name="menu" marginTop={10} size={24} color='#333'/>
-            </View>
-
-            <View style={styles.feedArticle}></View>
+        <View style={styles.sectionContainer}>
+          <View style={globalStyles.rowSpacing}>
+            <Text style={globalStyles.sectionTitleText}>Feed</Text>
+            <Ionicons name="menu" marginTop={10} size={24} color='#333' />
           </View>
-        </ScrollView>
+
+          <View style={styles.feedArticle}></View>
+        </View>
+      </ScrollView>
 
 
       <Modal
-        visible={isCardExpanded}
+        visible={isCardExpanded && selectedAppointment !== null}
         transparent={true}
         animationType="fade" // Overall fade for blur
         onRequestClose={() => setIsCardExpanded(false)}
@@ -211,19 +213,21 @@ export default function HomeScreen({ navigation}: HomeScreenProps) {
             { transform: [{ translateY: slideAnim }] }
           ]}
         >
-          <ModalAppointmentCard
-            title="Cardiology Appointment"
-            subtitle="Johns Hopkins Hospital"
-            date="Friday, 8 August"
-            time="09:00 PM - 10:00 PM"
-            location="1800 Orleans St, Baltimore, MD 21287"
-            phone="(410) 955-5000"
-            notes="Bring referral and insurance"
-          />
+          {selectedAppointment && (
+            <ModalAppointmentCard
+              title={selectedAppointment.title}
+              subtitle={selectedAppointment.subtitle}
+              date={selectedAppointment.date}
+              time={selectedAppointment.time}
+              location={selectedAppointment.location}
+              phone={selectedAppointment.phone}
+              notes={selectedAppointment.notes}
+            />
+          )}
         </Animated.View>
       </Modal>
-      </View>
-  );    
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -235,7 +239,7 @@ const styles = StyleSheet.create({
   },
   date: {
     color: '#2E5BBA',
-    marginRight: 200
+    marginRight: 180
   },
   weather: {
     color: '#aaa',
@@ -256,18 +260,18 @@ const styles = StyleSheet.create({
     marginLeft: 50
   },
   cardStack: {
-  position: 'relative',
-  width: '100%',
-  height: 160,
+    position: 'relative',
+    width: '100%',
+    height: 160,
   },
   cardShadowLayer: {
     position: 'absolute',
-    top: 8,    
-    left: 8,   
-    right: -8,  
-    bottom: 0, 
-    borderRadius: 22, 
-    backgroundColor: '#1e3d80ff', 
+    top: 8,
+    left: 8,
+    right: -8,
+    bottom: 0,
+    borderRadius: 22,
+    backgroundColor: '#1e3d80ff',
     zIndex: 0,
   },
   appointmentCard: {
@@ -278,9 +282,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#2E5BBA',
   },
   appointmentDateContainer: {
-    flexDirection: 'row',         
-    gap: 12, 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
     borderRadius: 20,
     paddingLeft: 20,
     width: '96%',
@@ -292,10 +296,10 @@ const styles = StyleSheet.create({
     height: '60%',
     backgroundColor: '#ffffff',
     width: 1,
-    marginHorizontal: 5, 
+    marginHorizontal: 5,
     marginVertical: 5,
   },
-  
+
   // Medication
   medicationCard: {
     borderRadius: 20,              // More rounded
@@ -305,10 +309,10 @@ const styles = StyleSheet.create({
   },
   medicineStatusButton: {
     flexDirection: 'row',
-    alignItems: 'center', 
+    alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 20,
-    marginTop: '15%', 
+    marginTop: '15%',
     marginLeft: 5,
     width: '90%',
     height: '25%',

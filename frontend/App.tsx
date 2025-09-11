@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigatorScreenParams, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { AppointmentsProvider } from './types/AppointmentProvider';
 
 // Auth screens
 import WelcomeScreen from './screens/WelcomeScreen';
@@ -19,7 +20,7 @@ import ChatScreen from './screens/ChatScreen';
 
 // Home Screens
 import CreateAppointmentScreen from './screens/CreateAppointmentScreen';
-
+import AppointmentScreen from './screens/AppointmentScreen'
 
 // Define screen types
 export type RootStackParamList = {
@@ -75,7 +76,7 @@ function HomeStackNavigator() {
       />
       <HomeStack.Screen
         name="Appointments"
-        component={HomeScreen} // Replace with actual AppointmentsScreen when ready
+        component={AppointmentScreen} // Replace with actual AppointmentsScreen when ready
         options={{
           title: 'All Appointments',
           headerShown: false,
@@ -173,37 +174,39 @@ function MainTabNavigator() {
 // Main App Component
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        {...({ id: "StackTabs" } as any)}
-        initialRouteName="Welcome"
-        screenOptions={{
-          headerStyle: { backgroundColor: '#2E5BBA' },
-          headerTintColor: '#fff',
-          headerTitleStyle: { fontWeight: 'bold' },
-        }}
-      >
-        <Stack.Screen
-          name="Welcome"
-          component={WelcomeScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="SignUp"
-          component={SignUpScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="MainTabs"
-          component={MainTabNavigator}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+  <AppointmentsProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          {...({ id: "StackTabs" } as any)}
+          initialRouteName="Welcome"
+          screenOptions={{
+            headerStyle: { backgroundColor: '#2E5BBA' },
+            headerTintColor: '#fff',
+            headerTitleStyle: { fontWeight: 'bold' },
+          }}
+        >
+          <Stack.Screen
+            name="Welcome"
+            component={WelcomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUpScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="MainTabs"
+            component={MainTabNavigator}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+  </AppointmentsProvider>
   );
 }

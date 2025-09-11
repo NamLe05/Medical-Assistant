@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import globalStyles from '../components/globalStyles';
-import { Appointment } from '../types/AppointmentType';
+import { Appointment } from '../types/AppointmentProvider';
 
 interface AppointmentCardProps {
     appointment: Appointment | null;
@@ -14,9 +14,9 @@ export default function AppointmentCardStack({ appointment, totalAppointments, o
     // EMPTY CARD - when appointment is null
     if (appointment === null) {
         return (
-            <View style={styles.cardStack}>
+            <View style={cardStyles.cardStack}>
                 <TouchableOpacity
-                    style={[styles.emptyAppointmentCard, globalStyles.columnCentered]}
+                    style={[cardStyles.emptyAppointmentCard, globalStyles.columnCentered]}
                     activeOpacity={0.7}
                     onPress={() => onPress(null)}
                 >
@@ -31,11 +31,11 @@ export default function AppointmentCardStack({ appointment, totalAppointments, o
 
     // APPOINTMENT CARD - when appointment exists
     return (
-        <View style={styles.cardStack}>
-            {totalAppointments >= 2 && <View style={styles.cardShadowLayer}></View>}
-            {totalAppointments >= 3 && <View style={styles.cardShadowLayer2}></View>}
+        <View style={cardStyles.cardStack}>
+            {totalAppointments >= 2 && <View style={cardStyles.cardShadowLayer}></View>}
+            {totalAppointments >= 3 && <View style={cardStyles.cardShadowLayer2}></View>}
             <TouchableOpacity
-                style={styles.appointmentCard}
+                style={cardStyles.appointmentCard}
                 activeOpacity={1}
                 onPress={() => onPress(appointment)}
             >
@@ -47,11 +47,11 @@ export default function AppointmentCardStack({ appointment, totalAppointments, o
                     </View>
                 </View>
 
-                <View style={styles.appointmentDateContainer}>
-                    <Ionicons name="calendar-outline" size={24} color="white" />
+                <View style={cardStyles.appointmentDateContainer}>
+                    <Ionicons name="calendar-outline" size={22} color="white" />
                     <Text style={globalStyles.cardSubtitleText}>{appointment.date}</Text>
-                    <View style={styles.appointmentDateDivider}></View>
-                    <Ionicons name="time-outline" size={24} color="white" />
+                    <View style={cardStyles.appointmentDateDivider}></View>
+                    <Ionicons name="time-outline" size={22} color="white" />
                     <Text style={globalStyles.cardSubtitleText}>{appointment.time}</Text>
                 </View>
             </TouchableOpacity>
@@ -59,7 +59,7 @@ export default function AppointmentCardStack({ appointment, totalAppointments, o
     );
 }
 
-const styles = StyleSheet.create({
+export const cardStyles = StyleSheet.create({
     cardStack: {
         position: 'relative',
         width: '100%',
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
         gap: 12,
         alignItems: 'center',
         borderRadius: 20,
-        paddingLeft: 20,
+        paddingLeft: 12,
         width: '96%',
         height: '45%',
         margin: '2%',
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
         height: '60%',
         backgroundColor: '#ffffff',
         width: 1,
-        marginHorizontal: 5,
-        marginVertical: 5,
+        marginHorizontal: 1,
+        marginVertical: 1,
     },
 });

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { HomeStackParamList } from '../App';
 import { Ionicons } from '@expo/vector-icons';
 import globalStyles from '../components/globalStyles';
 import CustomTimePicker from '../components/CustomTimePicker';
+import { useAppointments } from '../types/AppointmentProvider';
+
 
 type CreateAppointmentScreenProps = {
   navigation: StackNavigationProp<HomeStackParamList, 'CreateAppointment'>;
@@ -30,9 +32,12 @@ const CustomTextInput = ({ hint, value, onChangeText, label }) => {
 };
 
 export default function CreateAppointmentScreen({ navigation }: CreateAppointmentScreenProps) {
+  const { addAppt } = useAppointments();
+
   // Form state
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
+  const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [notes, setNotes] = useState('');
 
@@ -57,12 +62,9 @@ export default function CreateAppointmentScreen({ navigation }: CreateAppointmen
   // Format time for display/storage
   const formatTime = (startTime: Date, endTime: Date): string => {
     const formatSingleTime = (time: Date): string => {
-      const hours = time.getHours();
-      const minutes = time.getMinutes();
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      const displayHours = hours % 12 || 12;
-      const displayMinutes = minutes.toString().padStart(2, '0');
-      return `${displayHours}:${displayMinutes} ${ampm}`;
+      const hours = time.getHours().toString().padStart(2, '0');
+      const minutes = time.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
     };
 
     return `${formatSingleTime(startTime)} - ${formatSingleTime(endTime)}`;
@@ -79,8 +81,12 @@ export default function CreateAppointmentScreen({ navigation }: CreateAppointmen
 
   const handleSave = () => {
     // Validate required fields
-    if (!title.trim()) {
-      alert('Please enter an appointment title');
+    if (!title.trim() || !location.trim()) {
+      Alert.alert(
+        'Error',
+        'Please enter all required fields',
+        [{ text: 'OK' }]
+      );
       return;
     }
 
@@ -88,18 +94,18 @@ export default function CreateAppointmentScreen({ navigation }: CreateAppointmen
     const newAppointment = {
       id: Date.now().toString(),
       title: title.trim(),
-      subtitle: location.trim() || 'Location not specified',
+      subtitle: location.trim(),
       date: formatDate(appointmentDate),
       time: formatTime(startTime, endTime),
-      location: location.trim() || 'Location not specified',
-      phone: phone.trim() || 'Phone not provided',
-      notes: notes.trim() || 'No notes'
+      location: location.trim() || 'N/A',
+      phone: phone.trim() || 'N/A',
+      notes: notes.trim() || 'N/A'
     };
 
     console.log('New appointment:', newAppointment);
 
-    // TODO: Add to appointments list (when you implement useAppointments or Context)
-    // addAppt(newAppointment);
+    // adds to global state
+    addAppt(newAppointment);
 
     // Navigate back
     navigation.goBack();
@@ -122,16 +128,17 @@ export default function CreateAppointmentScreen({ navigation }: CreateAppointmen
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        automaticallyAdjustKeyboardInsets={true}
       >
         <CustomTextInput
-          label="Title"
+          label="Title *"
           hint="Type of appointment"
           value={title}
           onChangeText={setTitle}
         />
 
         <CustomTextInput
-          label="Location"
+          label="Location *"
           hint="Where is the appointment"
           value={location}
           onChangeText={setLocation}
@@ -140,8 +147,8 @@ export default function CreateAppointmentScreen({ navigation }: CreateAppointmen
         <CustomTextInput
           label="Address"
           hint="Where is the appointment"
-          value={location}
-          onChangeText={setLocation}
+          value={address}
+          onChangeText={setAddress}
         />
 
         <CustomTextInput
