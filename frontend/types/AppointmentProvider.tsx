@@ -38,26 +38,55 @@ interface AppointmentsProviderProps {
     initialAppointments?: AppointmentList;
 }
 
+const sortAppointments = (appointments: Appointment[]): Appointment[] => {
+    return appointments.sort((a, b) => {
+        // Parse dates (assuming they're stored as ISO strings now)
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+
+        // First sort by date
+        if (dateA.getTime() !== dateB.getTime()) {
+            return dateA.getTime() - dateB.getTime();
+        }
+
+        // If dates are the same, sort by start time
+        const getStartTime = (timeString: string): number => {
+            const [startTime] = timeString.split(' - ');
+            const [hours, minutes] = startTime.split(':').map(Number);
+            return hours * 60 + minutes; // Convert to minutes for easy comparison
+        };
+
+        return getStartTime(a.time) - getStartTime(b.time);
+    });
+};
+
+
 export const AppointmentsProvider = ({ children, initialAppointments = [] }: AppointmentsProviderProps) => {
-    const [appointments, setAppointments] = useState<AppointmentList>(initialAppointments);
+    const [appointments, setAppointments] = useState<AppointmentList>(
+        sortAppointments(initialAppointments)
+    );
 
     const addAppt = useCallback((appointment: Appointment) => {
         console.log('Adding appointment to context:', appointment);
         setAppointments(prev => {
-            const newAppointments = [...prev, appointment];
-            console.log('New appointments list:', newAppointments);
+            const newAppointments = sortAppointments([...prev, appointment]);
+            console.log('New appointments list (sorted):', newAppointments);
             return newAppointments;
         });
     }, []);
 
     const removeAppt = useCallback((id: string | number) => {
-        setAppointments(prev => prev.filter(appt => appt.id !== id));
+        setAppointments(prev => {
+            const filtered = prev.filter(appt => appt.id !== id);
+            return sortAppointments(filtered);
+        });
     }, []);
 
     const updateAppt = useCallback((id: string | number, updates: Partial<Appointment>) => {
-        setAppointments(prev =>
-            prev.map(appt => appt.id === id ? { ...appt, ...updates } : appt)
-        );
+        setAppointments(prev => {
+            const updated = prev.map(appt => appt.id === id ? { ...appt, ...updates } : appt);
+            return sortAppointments(updated);
+        });
     }, []);
 
     const value: AppointmentsContextType = {
@@ -81,4 +110,12 @@ export const useAppointments = () => {
         throw new Error('useAppointments must be used within an AppointmentsProvider');
     }
     return context;
+};
+
+export const formatDateForDisplay = (date: Date): string => {
+    return date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric'
+    });
 };

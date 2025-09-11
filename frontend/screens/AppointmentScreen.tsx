@@ -6,19 +6,17 @@ import { Ionicons } from '@expo/vector-icons';
 import globalStyles from '../components/globalStyles';
 import { cardStyles } from '../components/AppointmentCardStack';
 import CustomTimePicker from '../components/CustomTimePicker';
-import { Appointment, useAppointments } from '../types/AppointmentProvider'
+import { Appointment, useAppointments, formatDateForDisplay } from '../types/AppointmentProvider'
 
 type AppointmentScreenProps = {
   navigation: StackNavigationProp<HomeStackParamList, 'Appointments'>;
 };
 
-
 export default function Appointments({ navigation }: AppointmentScreenProps) {
   const { appointments, removeAppt } = useAppointments();
 
-  const handleAppointmentPress = (appointment: Appointment) => {
-    // Handle appointment press - maybe navigate to details or open modal
-    console.log('Pressed appointment:', appointment.title);
+  const handleEditPress = (appointment: Appointment) => {
+    navigation.navigate('CreateAppointment', { appointment });
   };
 
   const handleDeletePress = (appointment: Appointment) => {
@@ -60,7 +58,7 @@ export default function Appointments({ navigation }: AppointmentScreenProps) {
       <TouchableOpacity
         style={cardStyles.appointmentCard}
         activeOpacity={0.8}
-        onPress={() => handleAppointmentPress(appointment)}
+        onPress={() => handleEditPress(appointment)}
       >
         <View style={globalStyles.row}>
           <Ionicons name="notifications-circle" marginRight={10} color="white" size={60} />
@@ -68,7 +66,8 @@ export default function Appointments({ navigation }: AppointmentScreenProps) {
             <Text style={globalStyles.cardTitleText}>{appointment.title}</Text>
             <Text style={globalStyles.cardSubtitleText}>{appointment.subtitle}</Text>
           </View>
-          <TouchableOpacity style={[styles.topButtons, { marginLeft: '80%' }]}>
+          <TouchableOpacity style={[styles.topButtons, { marginLeft: '80%' }]}
+            onPress={() => handleEditPress(appointment)}>
             <Ionicons name="create" size={32} color="#999" />
           </TouchableOpacity>
           <TouchableOpacity style={[styles.topButtons, { marginLeft: '92%' }]}
@@ -79,7 +78,7 @@ export default function Appointments({ navigation }: AppointmentScreenProps) {
 
         <View style={cardStyles.appointmentDateContainer}>
           <Ionicons name="calendar-outline" size={22} color="white" />
-          <Text style={globalStyles.cardSubtitleText}>{appointment.date}</Text>
+          <Text style={globalStyles.cardSubtitleText}>{formatDateForDisplay(new Date(appointment.date))}</Text>
           <View style={cardStyles.appointmentDateDivider}></View>
           <Ionicons name="time-outline" size={22} color="white" />
           <Text style={globalStyles.cardSubtitleText}>{appointment.time}</Text>

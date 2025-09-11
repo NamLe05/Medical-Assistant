@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import globalStyles from '../components/globalStyles';
-import { Appointment } from '../types/AppointmentProvider';
+import { Appointment, formatDateForDisplay } from '../types/AppointmentProvider';
 
 interface AppointmentCardProps {
     appointment: Appointment | null;
@@ -49,7 +49,7 @@ export default function AppointmentCardStack({ appointment, totalAppointments, o
 
                 <View style={cardStyles.appointmentDateContainer}>
                     <Ionicons name="calendar-outline" size={22} color="white" />
-                    <Text style={globalStyles.cardSubtitleText}>{appointment.date}</Text>
+                    <Text style={globalStyles.cardSubtitleText}>{formatDateForDisplay(new Date(appointment.date))}</Text>
                     <View style={cardStyles.appointmentDateDivider}></View>
                     <Ionicons name="time-outline" size={22} color="white" />
                     <Text style={globalStyles.cardSubtitleText}>{appointment.time}</Text>

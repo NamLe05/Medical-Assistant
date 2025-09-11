@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigatorScreenParams, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { AppointmentsProvider } from './types/AppointmentProvider';
+import { Appointment, AppointmentsProvider } from './types/AppointmentProvider';
 
 // Auth screens
 import WelcomeScreen from './screens/WelcomeScreen';
@@ -40,7 +40,7 @@ export type TabParamList = {
 // Home Stack Navigator (nested inside Home tab)
 export type HomeStackParamList = {
   Home: undefined;
-  CreateAppointment: undefined;
+  CreateAppointment: { appointment?: Appointment } | undefined;
   Appointments: undefined;
   Medication: undefined;
 };
@@ -174,7 +174,7 @@ function MainTabNavigator() {
 // Main App Component
 export default function App() {
   return (
-  <AppointmentsProvider>
+    <AppointmentsProvider>
       <NavigationContainer>
         <Stack.Navigator
           {...({ id: "StackTabs" } as any)}
@@ -207,6 +207,6 @@ export default function App() {
           />
         </Stack.Navigator>
       </NavigationContainer>
-  </AppointmentsProvider>
+    </AppointmentsProvider>
   );
 }

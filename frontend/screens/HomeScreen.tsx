@@ -5,7 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useFonts, Nunito_400Regular, Nunito_600SemiBold, Nunito_700Bold } from '@expo-google-fonts/nunito';
 import { BlurView } from 'expo-blur';
 import globalStyles from '../components/globalStyles'; import ModalAppointmentCard from '../components/ModalAppointmentCard';
-import { Appointment, useAppointments } from '../types/AppointmentProvider'
+import { Appointment, useAppointments, formatDateForDisplay } from '../types/AppointmentProvider'
 import AppointmentCardStack from '../components/AppointmentCardStack';
 import { HomeStackParamList } from '../App'
 import { DateTime } from '../types/DateTime';
@@ -217,7 +217,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             <ModalAppointmentCard
               title={selectedAppointment.title}
               subtitle={selectedAppointment.subtitle}
-              date={selectedAppointment.date}
+              date={formatDateForDisplay(new Date(selectedAppointment.date))}
               time={selectedAppointment.time}
               location={selectedAppointment.location}
               phone={selectedAppointment.phone}

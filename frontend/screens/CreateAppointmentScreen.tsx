@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
 import { HomeStackParamList } from '../App';
 import { Ionicons } from '@expo/vector-icons';
 import globalStyles from '../components/globalStyles';
 import CustomTimePicker from '../components/CustomTimePicker';
-import { useAppointments } from '../types/AppointmentProvider';
+import { Appointment, useAppointments } from '../types/AppointmentProvider';
 
+// Update the param list to include optional appointment
+type CreateEditAppointmentRouteProp = RouteProp<HomeStackParamList, 'CreateAppointment'>;
 
-type CreateAppointmentScreenProps = {
+type CreateEditAppointmentScreenProps = {
   navigation: StackNavigationProp<HomeStackParamList, 'CreateAppointment'>;
+  route: CreateEditAppointmentRouteProp;
 };
 
 const CustomTextInput = ({ hint, value, onChangeText, label }) => {
@@ -31,20 +35,83 @@ const CustomTextInput = ({ hint, value, onChangeText, label }) => {
   );
 };
 
-export default function CreateAppointmentScreen({ navigation }: CreateAppointmentScreenProps) {
-  const { addAppt } = useAppointments();
+export default function CreateEditAppointmentScreen({ navigation, route }: CreateEditAppointmentScreenProps) {
+  const { addAppt, updateAppt } = useAppointments();
 
-  // Form state
-  const [title, setTitle] = useState('');
-  const [location, setLocation] = useState('');
-  const [address, setAddress] = useState('');
-  const [phone, setPhone] = useState('');
-  const [notes, setNotes] = useState('');
+  // Check if we're editing an existing appointment
+  const appointmentToEdit = route.params?.appointment;
+  const isEditing = !!appointmentToEdit;
+
+  // Helper function to parse time string back to Date objects
+  const parseTimeString = (timeString: string): { start: Date, end: Date } => {
+    const [startStr, endStr] = timeString.split(' - ');
+    const today = new Date();
+
+    const parseTime = (timeStr: string): Date => {
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      const date = new Date(today);
+      date.setHours(hours, minutes, 0, 0);
+      return date;
+    };
+
+    return {
+      start: parseTime(startStr),
+      end: parseTime(endStr)
+    };
+  };
+
+  // Simple date parsing from ISO string - no more complex parsing needed!
+  const parseStoredDate = (isoString: string): Date => {
+    return new Date(isoString);
+  };
+
+  // Form state - initialize with existing appointment data if editing
+  const [title, setTitle] = useState(appointmentToEdit?.title || '');
+  const [location, setLocation] = useState(appointmentToEdit?.subtitle || '');
+  const [address, setAddress] = useState(appointmentToEdit?.location === 'N/A' ? '' : appointmentToEdit?.location || '');
+  const [phone, setPhone] = useState(appointmentToEdit?.phone === 'N/A' ? '' : appointmentToEdit?.phone || '');
+  const [notes, setNotes] = useState(appointmentToEdit?.notes === 'N/A' ? '' : appointmentToEdit?.notes || '');
 
   // Date/Time state
-  const [appointmentDate, setAppointmentDate] = useState(new Date());
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
+  const [appointmentDate, setAppointmentDate] = useState(() => {
+    if (appointmentToEdit?.date) {
+      try {
+        // If it's already an ISO string, parse it directly
+        return parseStoredDate(appointmentToEdit.date);
+      } catch {
+        // If it fails, it might be the old format - just return today
+        console.warn('Failed to parse stored date, using today');
+        return new Date();
+      }
+    }
+    return new Date();
+  });
+
+  const [startTime, setStartTime] = useState(() => {
+    if (appointmentToEdit?.time) {
+      try {
+        return parseTimeString(appointmentToEdit.time).start;
+      } catch {
+        return new Date();
+      }
+    }
+    return new Date();
+  });
+
+  const [endTime, setEndTime] = useState(() => {
+    if (appointmentToEdit?.time) {
+      try {
+        return parseTimeString(appointmentToEdit.time).end;
+      } catch {
+        const defaultEnd = new Date();
+        defaultEnd.setHours(defaultEnd.getHours() + 1);
+        return defaultEnd;
+      }
+    }
+    const defaultEnd = new Date();
+    defaultEnd.setHours(defaultEnd.getHours() + 1);
+    return defaultEnd;
+  });
 
   // Handlers for date/time pickers
   const handleDateChange = (date: Date) => {
@@ -59,7 +126,7 @@ export default function CreateAppointmentScreen({ navigation }: CreateAppointmen
     setEndTime(time);
   };
 
-  // Format time for display/storage
+  // Format time for display/storage (this stays the same)
   const formatTime = (startTime: Date, endTime: Date): string => {
     const formatSingleTime = (time: Date): string => {
       const hours = time.getHours().toString().padStart(2, '0');
@@ -70,13 +137,9 @@ export default function CreateAppointmentScreen({ navigation }: CreateAppointmen
     return `${formatSingleTime(startTime)} - ${formatSingleTime(endTime)}`;
   };
 
-  // Format date for display/storage
-  const formatDate = (date: Date): string => {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'short',
-      day: 'numeric'
-    });
+  // Format date for STORAGE - ISO string for easy parsing
+  const formatDateForStorage = (date: Date): string => {
+    return date.toISOString();
   };
 
   const handleSave = () => {
@@ -90,22 +153,30 @@ export default function CreateAppointmentScreen({ navigation }: CreateAppointmen
       return;
     }
 
-    // Create appointment object
-    const newAppointment = {
-      id: Date.now().toString(),
+    const appointmentData = {
       title: title.trim(),
       subtitle: location.trim(),
-      date: formatDate(appointmentDate),
+      date: formatDateForStorage(appointmentDate), // Store as ISO string
       time: formatTime(startTime, endTime),
-      location: location.trim() || 'N/A',
+      location: address.trim() || 'N/A',
       phone: phone.trim() || 'N/A',
       notes: notes.trim() || 'N/A'
     };
 
-    console.log('New appointment:', newAppointment);
+    if (isEditing) {
+      // Update existing appointment
+      console.log('Updating appointment with:', appointmentData);
+      updateAppt(appointmentToEdit!.id, appointmentData);
+    } else {
+      // Create new appointment
+      const newAppointment: Appointment = {
+        id: Date.now().toString(),
+        ...appointmentData
+      };
 
-    // adds to global state
-    addAppt(newAppointment);
+      console.log('New appointment:', newAppointment);
+      addAppt(newAppointment);
+    }
 
     // Navigate back
     navigation.goBack();
@@ -120,7 +191,9 @@ export default function CreateAppointmentScreen({ navigation }: CreateAppointmen
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back" size={32} color="#333" marginBottom={10} />
         </TouchableOpacity>
-        <Text style={[globalStyles.headerText, styles.title]}>Create A New Appointment!</Text>
+        <Text style={[globalStyles.headerText, styles.title]}>
+          {isEditing ? 'Edit Appointment' : 'Create A New Appointment!'}
+        </Text>
       </View>
 
       <ScrollView
@@ -184,7 +257,9 @@ export default function CreateAppointmentScreen({ navigation }: CreateAppointmen
 
         {/* Save Button */}
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>Save Appointment</Text>
+          <Text style={styles.saveButtonText}>
+            {isEditing ? 'Update Appointment' : 'Save Appointment'}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
