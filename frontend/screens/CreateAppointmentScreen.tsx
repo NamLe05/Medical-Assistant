@@ -79,8 +79,6 @@ export default function CreateEditAppointmentScreen({ navigation, route }: Creat
         // If it's already an ISO string, parse it directly
         return parseStoredDate(appointmentToEdit.date);
       } catch {
-        // If it fails, it might be the old format - just return today
-        console.warn('Failed to parse stored date, using today');
         return new Date();
       }
     }
@@ -164,8 +162,6 @@ export default function CreateEditAppointmentScreen({ navigation, route }: Creat
     };
 
     if (isEditing) {
-      // Update existing appointment
-      console.log('Updating appointment with:', appointmentData);
       updateAppt(appointmentToEdit!.id, appointmentData);
     } else {
       // Create new appointment
@@ -174,7 +170,6 @@ export default function CreateEditAppointmentScreen({ navigation, route }: Creat
         ...appointmentData
       };
 
-      console.log('New appointment:', newAppointment);
       addAppt(newAppointment);
     }
 
