@@ -16,6 +16,7 @@ type CreateEditAppointmentScreenProps = {
   route: CreateEditAppointmentRouteProp;
 };
 
+// CUSTOM TEXT INPUT
 const CustomTextInput = ({ hint, value, onChangeText, label }) => {
   return (
     <View style={styles.inputContainer}>
@@ -35,8 +36,44 @@ const CustomTextInput = ({ hint, value, onChangeText, label }) => {
   );
 };
 
+// CUSTOM COLOR SELECTOR
+// maps colors to color buttons
+const CustomColorSelector = ({ currColor, colors, onChangeColor }) => {
+  return (
+    <View style={styles.inputContainer}>
+      <Text style={[globalStyles.headerText, styles.title, styles.inputTitle]}>Color</Text>
+      <View style={styles.customColorRow}>
+        {Object.keys(colors).map((color, index) => (
+          <CustomColorButton
+            key={color}
+            color={colors[color].primary}
+            isSelected={colors[color].primary == currColor.primary}
+            onChangeColor={() => onChangeColor(color)}>
+          </CustomColorButton>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+const CustomColorButton = ({ color, isSelected, onChangeColor }) => {
+  return (
+    <TouchableOpacity
+      style={[styles.colorButton, { backgroundColor: color }, isSelected && styles.selectedColorButton]}
+      onPress={onChangeColor}>
+    </TouchableOpacity>
+  );
+}
+
+
 export default function CreateEditAppointmentScreen({ navigation, route }: CreateEditAppointmentScreenProps) {
   const { addAppt, updateAppt } = useAppointments();
+  const colors = {
+    blue: { primary: '#2E5BBA', secondary: '#3769d6ff' },
+    purple: { primary: '#AA1B6E', secondary: '#C63A85' },
+    green: { primary: '#2E8B57', secondary: '#4A9F6E' },
+    red: { primary: '#B83E3E', secondary: '#D65555' }
+  };
 
   // Check if we're editing an existing appointment
   const appointmentToEdit = route.params?.appointment;
@@ -71,6 +108,7 @@ export default function CreateEditAppointmentScreen({ navigation, route }: Creat
   const [address, setAddress] = useState(appointmentToEdit?.location === 'N/A' ? '' : appointmentToEdit?.location || '');
   const [phone, setPhone] = useState(appointmentToEdit?.phone === 'N/A' ? '' : appointmentToEdit?.phone || '');
   const [notes, setNotes] = useState(appointmentToEdit?.notes === 'N/A' ? '' : appointmentToEdit?.notes || '');
+  const [color, setColor] = useState(appointmentToEdit?.colors || colors.blue)
 
   // Date/Time state
   const [appointmentDate, setAppointmentDate] = useState(() => {
@@ -111,7 +149,7 @@ export default function CreateEditAppointmentScreen({ navigation, route }: Creat
     return defaultEnd;
   });
 
-  // Handlers for date/time pickers
+  // Handlers
   const handleDateChange = (date: Date) => {
     setAppointmentDate(date);
   };
@@ -123,6 +161,12 @@ export default function CreateEditAppointmentScreen({ navigation, route }: Creat
   const handleEndTimeChange = (time: Date) => {
     setEndTime(time);
   };
+
+  const handleColorChange = (themeName) => {
+    console.log('print')
+    setColor(colors[themeName]);
+  };
+
 
   // Format time for display/storage (this stays the same)
   const formatTime = (startTime: Date, endTime: Date): string => {
@@ -158,7 +202,8 @@ export default function CreateEditAppointmentScreen({ navigation, route }: Creat
       time: formatTime(startTime, endTime),
       location: address.trim() || 'N/A',
       phone: phone.trim() || 'N/A',
-      notes: notes.trim() || 'N/A'
+      notes: notes.trim() || 'N/A',
+      colors: color,
     };
 
     if (isEditing) {
@@ -234,6 +279,12 @@ export default function CreateEditAppointmentScreen({ navigation, route }: Creat
           onDateChange={handleDateChange}
           onStartTimeChange={handleStartTimeChange}
           onEndTimeChange={handleEndTimeChange}
+        />
+
+        <CustomColorSelector
+          currColor={color}
+          colors={colors}
+          onChangeColor={handleColorChange}
         />
 
         <View style={styles.inputContainer}>
@@ -323,4 +374,24 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
+  colorButton: {
+    borderRadius: 25,
+    width: 48,
+    height: 48,
+  },
+
+  customColorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',     // vertical alignment
+    justifyContent: 'space-between', // horizontal spacing
+    marginHorizontal: 50,
+    paddingVertical: 15,
+  },
+  selectedColorButton: {
+    borderWidth: 3,
+    borderColor: '#333'
+  }
+
+
+
 });

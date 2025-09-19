@@ -56,7 +56,7 @@ export default function Appointments({ navigation }: AppointmentScreenProps) {
   const renderAppointmentCard = (appointment: Appointment, index: number) => (
     <View key={appointment.id} style={[cardStyles.cardStack, { marginBottom: 40 }]}>
       <TouchableOpacity
-        style={cardStyles.appointmentCard}
+        style={[cardStyles.appointmentCard, { backgroundColor: appointment.colors.primary }]}
         activeOpacity={0.8}
         onPress={() => handleEditPress(appointment)}
       >
@@ -76,7 +76,7 @@ export default function Appointments({ navigation }: AppointmentScreenProps) {
           </TouchableOpacity>
         </View>
 
-        <View style={cardStyles.appointmentDateContainer}>
+        <View style={[cardStyles.appointmentDateContainer, { backgroundColor: appointment.colors.secondary }]}>
           <Ionicons name="calendar-outline" size={22} color="white" />
           <Text style={globalStyles.cardSubtitleText}>{formatDateForDisplay(new Date(appointment.date))}</Text>
           <View style={cardStyles.appointmentDateDivider}></View>

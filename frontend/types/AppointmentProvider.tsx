@@ -9,6 +9,7 @@ export interface Appointment {
     location: string;
     phone: string;
     notes: string;
+    colors: { primary: string; secondary: string };
 }
 
 // For multiple appointments

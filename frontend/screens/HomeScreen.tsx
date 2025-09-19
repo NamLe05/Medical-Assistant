@@ -5,14 +5,14 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useFonts, Nunito_400Regular, Nunito_600SemiBold, Nunito_700Bold } from '@expo-google-fonts/nunito';
 import { BlurView } from 'expo-blur';
 import globalStyles from '../components/globalStyles'; import ModalAppointmentCard from '../components/ModalAppointmentCard';
-import { Appointment, useAppointments, formatDateForDisplay } from '../types/AppointmentProvider'
 import AppointmentCardStack from '../components/AppointmentCardStack';
 import { HomeStackParamList } from '../App'
 import { DateTime } from '../types/DateTime';
+import { Appointment, useAppointments, formatDateForDisplay } from '../types/AppointmentProvider'
+import { Medication, useMedications } from '../types/MedicationProvider';
 
 
-
-const mockAppointment: Appointment = {
+/*const mockAppointment: Appointment = {
   id: '1',
   title: 'Cardiology Appointment',
   subtitle: 'Johns Hopkins Hospital',
@@ -20,8 +20,10 @@ const mockAppointment: Appointment = {
   time: '09:00 - 10:00',
   location: '1800 Orleans St, Baltimore, MD 21287',
   phone: '(410) 955-5000',
-  notes: 'Bring referral and insurance'
-};
+  notes: 'Bring referral and insurance',
+  primaryColor: '#333',
+  secondaryColor: '#333'
+};*/
 
 
 type HomeScreenProps = {
@@ -89,9 +91,9 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   // HEADER
   const HeaderSection = (
     <View style={styles.headerContainer}>
-      <View style={globalStyles.rowSpacing}>
+      <View style={[globalStyles.rowSpacing, { alignContent: 'space-between' }]}>
         <Text style={[globalStyles.headerText, styles.date]}>{date.getFormattedDate()}</Text>
-        <View style={[globalStyles.column, { marginLeft: -20 }]}>
+        <View style={[globalStyles.column]}>
           <Text style={[globalStyles.headerText, styles.weather]}>Sunny</Text>
           <Text style={[globalStyles.headerText, styles.weather]}>70°F</Text>
         </View>
@@ -115,7 +117,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
       <AppointmentCardStack
         appointment={displayAppointment}
-        totalAppointments={totalAppointments}
+        appointmentList={appointments}
         onPress={handleAppointmentPress}
       />
     </View>
@@ -137,10 +139,10 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           flexDirection: 'row',
           justifyContent: 'center',
           minWidth: '100%',  // This is key
-          paddingHorizontal: 0
+          padding: 10
         }}>
 
-          <TouchableOpacity style={[styles.medicationCard, { marginRight: 15, backgroundColor: '#2E5BBA' }]}>
+          <TouchableOpacity style={[styles.medicationCard, globalStyles.shadowLight, { marginRight: 15, backgroundColor: '#2E5BBA' }]}>
             <FontAwesome5 name="pills" size={30} color="white" />
             <Text style={[globalStyles.cardTitleText, { marginTop: 10 }]}>Claratin</Text>
             <Text style={[globalStyles.cardSubtitleText]}>1 pill, 15 mg.</Text>
@@ -316,7 +318,13 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     width: '90%',
     height: '25%',
-    backgroundColor: '#ffffff'
+    backgroundColor: 'white',
+
+    shadowColor: '#000',
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    elevation: 4,
   },
   checkmarkOverlay: {
     position: 'absolute',

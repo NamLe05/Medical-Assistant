@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     paddingHorizontal: 25,
     height: 120, // Fixed height instead of percentage
-    marginBottom: 20,
+    marginBottom: 10,
   },
   inputTitle: {
     fontSize: 16,

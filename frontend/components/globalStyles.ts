@@ -30,7 +30,7 @@ export const globalStyles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',     // horizontal alignment
     justifyContent: 'center', // vertical alignment
-  },    
+  },
   divider: {
     height: 1,
     backgroundColor: '#e0e0e0',
@@ -43,7 +43,7 @@ export const globalStyles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 0,
     textAlign: 'center',
-    fontFamily: 'Nunito_700Bold', 
+    fontFamily: 'Nunito_700Bold',
   },
   sectionTitleText: {
     fontSize: 20,
@@ -52,20 +52,26 @@ export const globalStyles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 20,
     alignSelf: 'flex-start',
-    fontFamily: 'Nunito_700Bold', 
+    fontFamily: 'Nunito_700Bold',
   },
-   cardTitleText: {
+  cardTitleText: {
     fontSize: 16,
     color: '#ffffff',
     marginBottom: 4,
     fontFamily: 'Nunito_700Bold',
   },
-   cardSubtitleText: {
+  cardSubtitleText: {
     fontSize: 14,
     color: '#ffffff',
     fontFamily: 'Nunito_400Regular',
   },
-  // Add more styles here
+  shadowLight: {
+    shadowColor: '#000',
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    elevation: 4,
+  }
 });
 
 export default globalStyles

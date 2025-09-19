@@ -2,21 +2,21 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import globalStyles from '../components/globalStyles';
-import { Appointment, formatDateForDisplay } from '../types/AppointmentProvider';
+import { Appointment, AppointmentList, formatDateForDisplay } from '../types/AppointmentProvider';
 
 interface AppointmentCardProps {
     appointment: Appointment | null;
-    totalAppointments: number;
+    appointmentList: AppointmentList;
     onPress: (appointment: Appointment | null) => void; // Updated to accept null
 }
 
-export default function AppointmentCardStack({ appointment, totalAppointments, onPress }: AppointmentCardProps) {
+export default function AppointmentCardStack({ appointment, appointmentList, onPress }: AppointmentCardProps) {
     // EMPTY CARD - when appointment is null
     if (appointment === null) {
         return (
             <View style={cardStyles.cardStack}>
                 <TouchableOpacity
-                    style={[cardStyles.emptyAppointmentCard, globalStyles.columnCentered]}
+                    style={[cardStyles.emptyAppointmentCard, globalStyles.columnCentered, globalStyles.shadowLight]}
                     activeOpacity={0.7}
                     onPress={() => onPress(null)}
                 >
@@ -29,13 +29,14 @@ export default function AppointmentCardStack({ appointment, totalAppointments, o
         );
     }
 
+    const totalAppointments = appointmentList.length;
     // APPOINTMENT CARD - when appointment exists
     return (
-        <View style={cardStyles.cardStack}>
-            {totalAppointments >= 2 && <View style={cardStyles.cardShadowLayer}></View>}
-            {totalAppointments >= 3 && <View style={cardStyles.cardShadowLayer2}></View>}
+        <View style={[cardStyles.cardStack, globalStyles.shadowLight]}>
+            {totalAppointments >= 2 && <View style={[cardStyles.cardShadowLayer, { backgroundColor: appointmentList[1].colors.primary }]}></View>}
+            {totalAppointments >= 3 && <View style={[cardStyles.cardShadowLayer2, { backgroundColor: appointmentList[2].colors.primary }]}></View>}
             <TouchableOpacity
-                style={cardStyles.appointmentCard}
+                style={[cardStyles.appointmentCard, { backgroundColor: appointment.colors.primary }]}
                 activeOpacity={1}
                 onPress={() => onPress(appointment)}
             >
@@ -47,7 +48,7 @@ export default function AppointmentCardStack({ appointment, totalAppointments, o
                     </View>
                 </View>
 
-                <View style={cardStyles.appointmentDateContainer}>
+                <View style={[cardStyles.appointmentDateContainer, { backgroundColor: appointment.colors.secondary }]}>
                     <Ionicons name="calendar-outline" size={22} color="white" />
                     <Text style={globalStyles.cardSubtitleText}>{formatDateForDisplay(new Date(appointment.date))}</Text>
                     <View style={cardStyles.appointmentDateDivider}></View>
@@ -92,7 +93,7 @@ export const cardStyles = StyleSheet.create({
         padding: 10,
         width: '100%',
         height: 150,
-        backgroundColor: '#2E5BBA',
+        backgroundColor: '#B8733E',
         zIndex: 2,
     },
     emptyAppointmentCard: {
@@ -112,7 +113,7 @@ export const cardStyles = StyleSheet.create({
         width: '96%',
         height: '45%',
         margin: '2%',
-        backgroundColor: '#3769d6ff',
+        backgroundColor: '#D68F55',
     },
     appointmentDateDivider: {
         height: '60%',
