@@ -167,7 +167,8 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.medicationCard, globalStyles.columnCentered, { marginRight: 15, borderWidth: 2, borderColor: '#333', alignItems: 'center' }]}>
+          <TouchableOpacity style={[styles.medicationCard, globalStyles.columnCentered, { marginRight: 15, borderWidth: 2, borderColor: '#333', alignItems: 'center' }]}
+            onPress={() => navigation.navigate("CreateMedication")}>
             <Ionicons name="add" size={48} color="black" />
             <Text style={[globalStyles.cardTitleText, { marginTop: 10, color: '#333' }]}>Add New</Text>
           </TouchableOpacity>

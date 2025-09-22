@@ -6,6 +6,11 @@ export const globalStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
+  containerCentered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   rowSpacing: {
     flexDirection: 'row',
     alignItems: 'center',     // vertical alignment

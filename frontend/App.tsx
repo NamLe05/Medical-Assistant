@@ -6,6 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigatorScreenParams, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Appointment, AppointmentsProvider } from './types/AppointmentProvider';
+import { Medication, MedicationsProvider } from './types/MedicationProvider';
 
 // Auth screens
 import WelcomeScreen from './screens/WelcomeScreen';
@@ -21,6 +22,7 @@ import ChatScreen from './screens/ChatScreen';
 // Home Screens
 import CreateAppointmentScreen from './screens/CreateAppointmentScreen';
 import AppointmentScreen from './screens/AppointmentScreen'
+import CreateMedicationScreen from './screens/CreateMedicationScreen';
 
 // Define screen types
 export type RootStackParamList = {
@@ -43,6 +45,7 @@ export type HomeStackParamList = {
   CreateAppointment: { appointment?: Appointment } | undefined;
   Appointments: undefined;
   Medication: undefined;
+  CreateMedication: { medication?: Medication } | undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -90,6 +93,15 @@ function HomeStackNavigator() {
           headerShown: false,
         }}
       />
+      <HomeStack.Screen
+        name="CreateMedication"
+        component={CreateMedicationScreen}
+        options={{
+          title: 'All Medications',
+          headerShown: false,
+        }}
+      >
+      </HomeStack.Screen>
     </HomeStack.Navigator>
   );
 }
@@ -174,39 +186,41 @@ function MainTabNavigator() {
 // Main App Component
 export default function App() {
   return (
-    <AppointmentsProvider>
-      <NavigationContainer>
-        <Stack.Navigator
-          {...({ id: "StackTabs" } as any)}
-          initialRouteName="Welcome"
-          screenOptions={{
-            headerStyle: { backgroundColor: '#2E5BBA' },
-            headerTintColor: '#fff',
-            headerTitleStyle: { fontWeight: 'bold' },
-          }}
-        >
-          <Stack.Screen
-            name="Welcome"
-            component={WelcomeScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="SignUp"
-            component={SignUpScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="MainTabs"
-            component={MainTabNavigator}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AppointmentsProvider>
+    <MedicationsProvider>
+      <AppointmentsProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            {...({ id: "StackTabs" } as any)}
+            initialRouteName="Welcome"
+            screenOptions={{
+              headerStyle: { backgroundColor: '#2E5BBA' },
+              headerTintColor: '#fff',
+              headerTitleStyle: { fontWeight: 'bold' },
+            }}
+          >
+            <Stack.Screen
+              name="Welcome"
+              component={WelcomeScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="SignUp"
+              component={SignUpScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="MainTabs"
+              component={MainTabNavigator}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AppointmentsProvider>
+    </MedicationsProvider>
   );
 }

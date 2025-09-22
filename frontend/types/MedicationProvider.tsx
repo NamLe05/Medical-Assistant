@@ -7,9 +7,12 @@ export interface Medication {
     type: 'medication' | 'supplement';
     notes: string;
 
-    dosage: string; // '10mg'
-    frequencyAmount: number; // '2 pills'
-    frequencyTimes: number; // ' twice daily'
+    dosage: string; // '10'
+    dosageUnit: string; // 'mg'
+    frequencyAmount: number; // '2'
+    dosageType: string; // 'pills'
+    frequencyTimes: number; // ' twice'
+    frequencyType: 'daily' | 'weekly' | 'monthly' | 'as-needed'
     remaining: number;
     total: number;
 

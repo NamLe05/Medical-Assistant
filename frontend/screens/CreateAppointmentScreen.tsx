@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -281,14 +281,8 @@ export default function CreateEditAppointmentScreen({ navigation, route }: Creat
           onEndTimeChange={handleEndTimeChange}
         />
 
-        <CustomColorSelector
-          currColor={color}
-          colors={colors}
-          onChangeColor={handleColorChange}
-        />
-
         <View style={styles.inputContainer}>
-          <Text style={[globalStyles.headerText, styles.title, styles.inputTitle]}>Notes</Text>
+          <Text style={[globalStyles.headerText, styles.title, styles.inputTitle, { marginBottom: 10 }]}>Notes</Text>
           <TextInput
             style={[styles.input, styles.notesInput]}
             placeholder="Additional notes or instructions"
@@ -300,6 +294,12 @@ export default function CreateEditAppointmentScreen({ navigation, route }: Creat
             textAlignVertical="top"
           />
         </View>
+
+        <CustomColorSelector
+          currColor={color}
+          colors={colors}
+          onChangeColor={handleColorChange}
+        />
 
         {/* Save Button */}
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
