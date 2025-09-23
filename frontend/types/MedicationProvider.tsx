@@ -3,15 +3,15 @@ import React, { createContext, useContext, useCallback, useState, ReactNode } fr
 export interface Medication {
     id: string;
     name: string;
-    color: string;
+    colors: { primary: string; secondary: string };
     type: 'medication' | 'supplement';
     notes: string;
 
     dosage: string; // '10'
     dosageUnit: string; // 'mg'
-    frequencyAmount: number; // '2'
     dosageType: string; // 'pills'
-    frequencyTimes: number; // ' twice'
+    frequencyAmount: number; // '2'
+    frequencyTimes: number;
     frequencyType: 'daily' | 'weekly' | 'monthly' | 'as-needed'
     remaining: number;
     total: number;

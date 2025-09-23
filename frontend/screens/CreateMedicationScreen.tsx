@@ -210,8 +210,8 @@ const CustomDosageInput = ({ remaining, onRemainingChange, total, onTotalChange,
     <View style={styles.inputContainer}>
       <Text style={[globalStyles.headerText, styles.title, styles.inputTitle, { marginBottom: 10 }]}>Dosage Information *</Text>
 
+      {/* Amount Remaining/Total */}
       <Text style={[globalStyles.headerText, styles.title, styles.inputTitle]}>Amount</Text>
-
       <View style={[globalStyles.row, { marginBottom: 10 }]}>
         <TextInput
           style={[styles.input, { width: '15%', textAlign: 'center' }]}
@@ -240,15 +240,15 @@ const CustomDosageInput = ({ remaining, onRemainingChange, total, onTotalChange,
         />
       </View>
 
+      {/* Dosage */}
       <Text style={[globalStyles.headerText, styles.title, styles.inputTitle]}>Dosage</Text>
-
       <View style={[globalStyles.row, { marginBottom: 10 }]}>
         <TextInput
           style={[styles.input, { width: '15%', textAlign: 'center', marginTop: 15 }]}
           placeholder={'10'}
           placeholderTextColor="#9ca3af"
-          value={remaining?.toString()}
-          onChangeText={onRemainingChange}
+          value={dosage?.toString()}
+          onChangeText={onDosageChange}
           multiline={false}
           numberOfLines={1}
           autoCapitalize="none"
@@ -285,6 +285,7 @@ const CustomDosageInput = ({ remaining, onRemainingChange, total, onTotalChange,
       >
       </CustomPicker>
 
+      {/* Amount and Frequency */}
       <View style={[globalStyles.rowSpacing]}>
         {/* Amount */}
         <CustomPicker
@@ -380,7 +381,7 @@ export default function CreateEditMedicationScreen({ navigation, route }: Create
   const isEditing = !!medicationToEdit // checks if undefined
 
   const [name, setName] = useState(medicationToEdit?.name || '');
-  const [color, setColor] = useState(medicationToEdit?.color || colors.blue);
+  const [color, setColor] = useState(medicationToEdit?.colors || colors.blue);
   const [type, setType] = useState(medicationToEdit?.type || 'medication');
   const [notes, setNotes] = useState(medicationToEdit?.notes || '');
   const [dosage, setDosage] = useState(medicationToEdit?.dosage || '');
@@ -389,15 +390,57 @@ export default function CreateEditMedicationScreen({ navigation, route }: Create
   const [freqAmnt, setFreqAmnt] = useState(medicationToEdit?.frequencyAmount || 1);
   const [freqTimes, setFreqTimes] = useState(medicationToEdit?.frequencyTimes || 1);
   const [freqType, setFreqType] = useState(medicationToEdit?.frequencyType || 'daily');
-  const [remaining, setRemaining] = useState(medicationToEdit?.remaining);
-  const [total, setTotal] = useState(medicationToEdit?.total);
+  const [remaining, setRemaining] = useState(medicationToEdit?.remaining || null);
+  const [total, setTotal] = useState(medicationToEdit?.total || null);
   const [timesToTake, setTimesToTake] = useState(medicationToEdit?.timesToTake || []);
 
   const handleColorChange = (themeName) => {
-    console.log('print')
     setColor(colors[themeName]);
   };
 
+  const handleSave = () => {
+    if (!name.trim() || total == null || remaining == null!) {
+      Alert.alert(
+        'Error',
+        'Please enter all required fields',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
+    const medicationData = {
+      name: name.trim(),
+      colors: color,
+      type: type,
+      notes: notes.trim(),
+      dosage: dosage.trim(),
+      dosageUnit: dosageUnit,
+      dosageType: dosageType,
+      frequencyAmount: freqAmnt,
+      frequencyTimes: freqTimes,
+      frequencyType: freqType,
+      remaining: remaining,
+      total: total,
+      timesToTake: timesToTake,
+      taken: false
+    }
+
+    if (isEditing) {
+      updateMedication(medicationToEdit!.id, medicationData);
+    } else {
+      // Create new appointment
+      const newMedication: Medication = {
+        id: Date.now().toString(),
+        ...medicationData,
+      };
+
+      addMedication(newMedication);
+    }
+
+    // Navigate back
+    navigation.goBack();
+
+  }
 
   return (
     <KeyboardAvoidingView
@@ -477,7 +520,8 @@ export default function CreateEditMedicationScreen({ navigation, route }: Create
         />
 
         {/* Save Button */}
-        <TouchableOpacity style={styles.saveButton}>
+        <TouchableOpacity style={styles.saveButton}
+          onPress={handleSave}>
           <Text style={styles.saveButtonText}>
             {isEditing ? 'Update Appointment' : 'Save Appointment'}
           </Text>

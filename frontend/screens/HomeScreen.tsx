@@ -25,17 +25,65 @@ import { Medication, useMedications } from '../types/MedicationProvider';
   secondaryColor: '#333'
 };*/
 
-
 type HomeScreenProps = {
   navigation: StackNavigationProp<HomeStackParamList, 'Home'>;
 };
 
+
+const MedicationCard = (medication: Medication, onTakePress) => {
+  const name = medication.name;
+  const color = medication.colors.primary;
+  const type = medication.type;
+  const dosage = medication.dosage;
+  const dosageUnit = medication.dosageUnit
+  const dosageType = medication.dosageType;
+  const freqAmnt = medication.frequencyAmount;
+  const freqTimes = medication.frequencyTimes
+  const freqType = medication.frequencyType
+  const remaining = medication.remaining
+  const total = medication.total;
+  const taken = medication.taken;
+
+  const freqTimesTable = {
+    1: { label: 'once' },
+    2: { label: 'twice' },
+    3: { label: 'three times' },
+    4: { label: 'four times' },
+    5: { label: 'five times' },
+    6: { label: 'six times' }
+  }
+
+  return (
+    <TouchableOpacity style={[styles.medicationCard, globalStyles.shadowLight, { marginRight: 15, backgroundColor: color }]}>
+      {taken && <View style={styles.checkmarkOverlay}>
+        <Ionicons name="checkmark-circle" size={40} color="#10b91eff" />
+      </View>}
+      <FontAwesome5 name="pills" size={30} color="white" />
+      <Text style={[globalStyles.cardTitleText, { marginTop: 10 }]}>{medication.name}</Text>
+      <Text style={[globalStyles.cardSubtitleText]}>{freqAmnt + ' ' + dosageType + ', ' + dosage + ' ' + dosageUnit + '.'}</Text>
+      <Text style={[globalStyles.cardSubtitleText]}>{`${freqTimesTable[freqTimes].label} ${freqType}`}</Text>
+      <Text style={[globalStyles.cardSubtitleText]}>{`${remaining}/${total}`}</Text>
+      <TouchableOpacity style={styles.medicineStatusButton}
+        onPress={() => onTakePress(medication)}>
+        <Text style={[globalStyles.cardTitleText, { color: color }]}>{taken == true ? `Taken` : `Take`}</Text>
+      </TouchableOpacity>
+    </TouchableOpacity>
+  )
+}
+
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const { appointments, addAppt, removeAppt, updateAppt } = useAppointments();
+  const { medications, updateMedication } = useMedications();
 
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
-  const [slideAnim] = useState(new Animated.Value(300));
+  const [slideAnim] = useState(new Animated.Value(300))
+
+  // Use the first appoinrtment from props, or fallback to mock data
+  const displayAppointment = appointments.length > 0 ? appointments[0] : null;
+  const totalAppointments = appointments.length;
+  console.log(totalAppointments)
+
   const date = new DateTime()
 
   useEffect(() => {
@@ -43,20 +91,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
     }
   }, [appointments.length, addAppt]);
-
-  // Use the first appoinrtment from props, or fallback to mock data
-  const displayAppointment = appointments.length > 0 ? appointments[0] : null;
-  const totalAppointments = appointments.length;
-  console.log(totalAppointments)
-
-  const handleAppointmentPress = (appointment: Appointment) => {
-    if (appointment == null) {
-      navigation.navigate('CreateAppointment')
-    } else {
-      setSelectedAppointment(appointment);
-      setIsCardExpanded(true);
-    }
-  };
 
   useEffect(() => {
     if (isCardExpanded) {
@@ -86,6 +120,22 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
   if (!fontsLoaded) {
     return null; // or a loading spinner
+  }
+
+  const handleAppointmentPress = (appointment: Appointment) => {
+    if (appointment == null) {
+      navigation.navigate('CreateAppointment')
+    } else {
+      setSelectedAppointment(appointment);
+      setIsCardExpanded(true);
+    }
+  };
+
+  const handleTakePress = (medication: Medication) => {
+    if (medication) {
+      updateMedication(medication.id, { taken: !medication.taken })
+      console.log(medication.taken)
+    }
   }
 
   // HEADER
@@ -137,35 +187,11 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       >
         <View style={{
           flexDirection: 'row',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
           minWidth: '100%',  // This is key
           padding: 10
         }}>
-
-          <TouchableOpacity style={[styles.medicationCard, globalStyles.shadowLight, { marginRight: 15, backgroundColor: '#2E5BBA' }]}>
-            <FontAwesome5 name="pills" size={30} color="white" />
-            <Text style={[globalStyles.cardTitleText, { marginTop: 10 }]}>Claratin</Text>
-            <Text style={[globalStyles.cardSubtitleText]}>1 pill, 15 mg.</Text>
-            <Text style={[globalStyles.cardSubtitleText]}>25/30</Text>
-            <View style={styles.medicineStatusButton}>
-              <Text style={[globalStyles.cardTitleText, { color: '#2E5BBA' }]}>Take</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.medicationCard, { marginRight: 15, backgroundColor: '#aa1b6eff' }]}>
-            <View style={styles.checkmarkOverlay}>
-              <Ionicons name="checkmark-circle" size={40} color="#10b91eff" />
-            </View>
-            <FontAwesome5 name="prescription-bottle-alt" size={30} color="white" />
-            <Text style={[globalStyles.cardTitleText, { marginTop: 10 }]}>Vitamin D</Text>
-            <Text style={[globalStyles.cardSubtitleText]}>1 pill, 500 mg.</Text>
-            <Text style={[globalStyles.cardSubtitleText]}>60/90</Text>
-
-            <View style={styles.medicineStatusButton}>
-              <Text style={[globalStyles.cardTitleText, { color: '#aa1b6eff' }]}>Taken</Text>
-
-            </View>
-          </TouchableOpacity>
+          {medications.map((medication, index) => MedicationCard(medication, handleTakePress))}
 
           <TouchableOpacity style={[styles.medicationCard, globalStyles.columnCentered, { marginRight: 15, borderWidth: 2, borderColor: '#333', alignItems: 'center' }]}
             onPress={() => navigation.navigate("CreateMedication")}>
@@ -308,7 +334,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,              // More rounded
     padding: 15,
     width: 140,
-    height: 200,
+    height: 220,
   },
   medicineStatusButton: {
     flexDirection: 'row',
